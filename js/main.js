@@ -1,6 +1,7 @@
 /* Controlador: lista de ciudades, buscador, control de tiempo y persistencia.
    El tiempo mostrado es siempre "ahora + desfase"; al mover el control, el desfase
-   visible persigue al elegido con una curva, y con él giran sombra y horas a la vez. */
+   visible persigue al elegido con una curva, y con él giran la Tierra, los satélites
+   y las horas a la vez. */
 (function () {
   "use strict";
 
@@ -124,7 +125,7 @@
     els.search.placeholder = full ? "máximo " + MAX_CITIES + " · quita una ciudad" : "agregar ciudad: Tokio, Japón, Asia…";
     els.sky.setAttribute(
       "aria-label",
-      "La Tierra vista desde encima del polo norte, con la mitad en sombra donde es de noche. " +
+      "La Tierra vista desde encima del polo norte dentro de un dial de 24 horas: el mediodía solar queda arriba y la noche abajo. " +
         (cities.length
           ? "En órbita: " +
             cities
