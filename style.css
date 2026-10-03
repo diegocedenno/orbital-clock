@@ -18,36 +18,33 @@
   grid-area: stage;
   position: sticky;
   top: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
   min-width: 0;
   height: clamp(440px, calc(100dvh - 170px), 640px);
-  padding-block: 26px;
-}
-
-.stage-svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
 }
 
 .stage-hud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px var(--s-4);
+}
+
+/* El SVG llena el hueco que dejan las dos líneas de consola. */
+.stage-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.stage-svg {
   position: absolute;
-  margin: 0;
-  pointer-events: none;
-}
-
-.stage-hud--tl {
-  top: 0;
-  left: 0;
-}
-
-.stage-hud--tr {
-  top: 0;
-  right: 0;
-}
-
-.stage-hud--bl {
-  bottom: 0;
-  left: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 .sea {
@@ -98,16 +95,15 @@
   opacity: 0.7;
 }
 
-/* Sombra de la noche: gira entera con el Sol. La segunda capa solo se usa
-   para fundir cuando hay movimiento reducido. */
+/* La sombra de la noche no gira: el Sol queda siempre arriba. */
 .shade {
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 200ms var(--ease-in-out);
 }
 
-.shade.is-on {
-  opacity: 1;
+.dial-hour {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--text-2);
 }
 
 .night {
@@ -174,6 +170,7 @@
 .sat-leader {
   stroke: var(--border-strong);
   stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
 .sat-city {
@@ -694,10 +691,10 @@
   .stage {
     position: relative;
     top: auto;
-    height: min(calc(100vw - 2 * var(--page-pad) + 52px), 520px);
+    height: min(calc(100vw - 2 * var(--page-pad) + 76px), 540px);
   }
 
-  .stage-hud--tr {
+  .stage-tip {
     display: none;
   }
 
@@ -730,7 +727,7 @@
 }
 
 @media (hover: none) {
-  .stage-hud--tr {
+  .stage-tip {
     display: none;
   }
 

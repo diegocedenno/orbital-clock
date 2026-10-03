@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>orbital-clock — reloj mundial orbital</title>
-  <meta name="description" content="Reloj mundial: la Tierra vista desde el polo norte con el terminador día/noche real y las ciudades en órbita con su hora local.">
+  <meta name="description" content="Reloj mundial: la Tierra gira dentro de un dial de 24 h con el terminador día/noche real y las ciudades orbitan como satélites con su hora local.">
   <meta name="theme-color" content="#0d1117">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/tokens.css">
@@ -44,10 +44,17 @@
       <h1 class="sr-only">orbital-clock: reloj mundial con el día y la noche en tiempo real</h1>
 
       <section class="stage" id="stage" aria-label="La Tierra y las ciudades en órbita">
-        <svg class="stage-svg" id="sky" viewBox="-300 -300 600 600" role="img" aria-label="La Tierra vista desde encima del polo norte, con la mitad en sombra donde es de noche y las ciudades en órbita."></svg>
-        <p class="stage-hud stage-hud--tl console">ciudades: <b id="count">0/10</b></p>
-        <p class="stage-hud stage-hud--tr console">arrastra el globo: <b>±24 h</b></p>
-        <p class="stage-hud stage-hud--bl console">cenit solar: <b id="zenith">—</b></p>
+        <div class="stage-hud">
+          <p class="console">ciudades: <b id="count">0/10</b></p>
+          <p class="console stage-tip">arrastra el globo: <b>±24 h</b></p>
+        </div>
+        <div class="stage-view">
+          <svg class="stage-svg" id="sky" viewBox="-300 -300 600 600" role="img" aria-label="La Tierra vista desde encima del polo norte dentro de un dial de 24 horas, con las ciudades en órbita."></svg>
+        </div>
+        <div class="stage-hud">
+          <p class="console">cenit solar: <b id="zenith">—</b></p>
+          <p class="console">dial: <b>hora solar</b> · etiqueta: <b>hora civil</b></p>
+        </div>
       </section>
 
       <section class="time panel" aria-label="Control de tiempo">
