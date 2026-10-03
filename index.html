@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>orbital-clock — reloj mundial orbital</title>
+  <meta name="description" content="Reloj mundial: la Tierra vista desde el polo norte con el terminador día/noche real y las ciudades en órbita con su hora local.">
+  <meta name="theme-color" content="#0d1117">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="assets/starfield.js"></script>
+  <script defer src="js/data.js"></script>
+  <script defer src="js/clock.js"></script>
+  <script defer src="js/scene.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+<body>
+  <svg class="sr-only" aria-hidden="true" focusable="false">
+    <symbol id="i-sun" viewBox="0 0 16 16">
+      <circle cx="8" cy="8" r="3" fill="currentColor"/>
+      <path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 16 16">
+      <path d="M10.2 2.2a6 6 0 1 0 3.6 8.6 5 5 0 0 1-3.6-8.6Z" fill="currentColor"/>
+    </symbol>
+  </svg>
+
+  <div class="page">
+    <header class="page-head">
+      <a class="brand" href="./" aria-label="orbital-clock, inicio">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="13.5" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="1.5 3.2" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="8" fill="#c9a27e"/>
+          <path d="M16 8a8 8 0 0 1 0 16Z" fill="#0d1117" opacity="0.6"/>
+          <circle cx="6.5" cy="6.5" r="2.4" fill="#e6edf3"/>
+        </svg>
+        orbital-clock
+      </a>
+      <p class="console" id="status" role="status">status: <b>tiempo real</b></p>
+    </header>
+
+    <main class="layout">
+      <h1 class="sr-only">orbital-clock: reloj mundial con el día y la noche en tiempo real</h1>
+
+      <section class="stage" id="stage" aria-label="La Tierra y las ciudades en órbita">
+        <svg class="stage-svg" id="sky" viewBox="-300 -300 600 600" role="img" aria-label="La Tierra vista desde encima del polo norte, con la mitad en sombra donde es de noche y las ciudades en órbita."></svg>
+        <p class="stage-hud stage-hud--tl console">ciudades: <b id="count">0/10</b></p>
+        <p class="stage-hud stage-hud--tr console">arrastra el globo: <b>±24 h</b></p>
+        <p class="stage-hud stage-hud--bl console">cenit solar: <b id="zenith">—</b></p>
+      </section>
+
+      <section class="time panel" aria-label="Control de tiempo">
+        <div class="time-head">
+          <span class="console">tiempo universal</span>
+          <span class="time-date mono" id="date">—</span>
+        </div>
+        <div class="time-now">
+          <p class="time-clock mono"><span id="utc">--:--:--</span> <small>UTC</small></p>
+          <button type="button" class="btn" id="now">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.8-4.1M2.5 2.2v2.6h2.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            ahora
+          </button>
+        </div>
+        <div class="time-shift">
+          <label class="console" for="offset">desfase</label>
+          <span class="time-out mono" id="offset-out">0 h 00 min</span>
+        </div>
+        <input class="time-range" id="offset" type="range" min="-1440" max="1440" step="15" value="0" aria-valuetext="tiempo real, sin desfase">
+        <div class="time-scale mono" aria-hidden="true">
+          <span>−24 h</span><span>−12</span><span>0</span><span>+12</span><span>+24 h</span>
+        </div>
+      </section>
+
+      <section class="cities panel" aria-label="Ciudades">
+        <div class="search">
+          <label class="sr-only" for="search">Agregar ciudad: busca por ciudad, país o región</label>
+          <svg class="search-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m10.5 10.5 3.3 3.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input class="search-input" id="search" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="results" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="agregar ciudad: Tokio, Japón, Asia…">
+          <div class="search-pop" id="pop" hidden>
+            <ul class="search-list" id="results" role="listbox" aria-label="Ciudades y husos horarios"></ul>
+            <p class="search-none console" id="none" hidden>sin coincidencias</p>
+          </div>
+        </div>
+        <p class="sr-only" id="announce" aria-live="polite"></p>
+
+        <table class="table" id="table">
+          <caption class="sr-only">Hora local de cada ciudad en órbita</caption>
+          <thead>
+            <tr>
+              <th scope="col">ciudad</th>
+              <th scope="col" class="t-time">hora</th>
+              <th scope="col" class="t-diff">vs. local</th>
+              <th scope="col" class="t-x"><span class="sr-only">Quitar</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="cities-empty console" id="empty" hidden>sin ciudades · busca una para ponerla en órbita</p>
+        <p class="cities-note console" id="note" hidden>≈ longitud estimada con el desfase UTC (15° por hora)</p>
+      </section>
+    </main>
+
+    <footer class="page-foot">
+      <span>orbital-clock · serie Plutón</span>
+      <span>hecho por <a href="https://github.com/diegocedenno">diegocedenno</a> · MIT</span>
+    </footer>
+  </div>
+</body>
+</html>

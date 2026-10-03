@@ -1,0 +1,740 @@
+/* orbital-clock — estilos propios. Los tokens y la base viven en assets/tokens.css */
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "stage time"
+    "stage cities";
+  align-items: start;
+  gap: var(--s-4) var(--s-5);
+}
+
+/* ---------- escena ---------- */
+
+.stage {
+  grid-area: stage;
+  position: sticky;
+  top: var(--s-5);
+  min-width: 0;
+  height: clamp(440px, calc(100dvh - 170px), 640px);
+  padding-block: 26px;
+}
+
+.stage-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.stage-hud {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+}
+
+.stage-hud--tl {
+  top: 0;
+  left: 0;
+}
+
+.stage-hud--tr {
+  top: 0;
+  right: 0;
+}
+
+.stage-hud--bl {
+  bottom: 0;
+  left: 0;
+}
+
+.sea {
+  fill: var(--surface-2);
+}
+
+.land {
+  fill: var(--accent);
+  fill-opacity: 0.62;
+  stroke: var(--accent);
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+}
+
+.lakes {
+  fill: var(--surface-2);
+}
+
+.grid {
+  fill: none;
+  stroke: var(--text);
+  stroke-opacity: 0.16;
+  stroke-width: 1;
+  stroke-dasharray: 1 5;
+  stroke-linecap: round;
+}
+
+.grid--equator {
+  stroke-opacity: 0.3;
+  stroke-dasharray: 1 4;
+}
+
+.rim {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.ticks {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.pole {
+  fill: var(--text);
+  opacity: 0.7;
+}
+
+/* Sombra de la noche: gira entera con el Sol. La segunda capa solo se usa
+   para fundir cuando hay movimiento reducido. */
+.shade {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-in-out);
+}
+
+.shade.is-on {
+  opacity: 1;
+}
+
+.night {
+  fill: var(--bg);
+  fill-opacity: 0.52;
+  fill-rule: evenodd;
+}
+
+.terminator {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-opacity: 0.75;
+  stroke-linejoin: round;
+}
+
+.sun-mark circle {
+  fill: var(--accent);
+}
+
+.sun-mark path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.moon-mark {
+  fill: var(--text-2);
+}
+
+.globe-hit {
+  fill: transparent;
+  cursor: grab;
+}
+
+.stage.is-dragging .globe-hit {
+  cursor: grabbing;
+}
+
+/* ---------- satélites ---------- */
+
+.sat {
+  transition: opacity 220ms var(--ease-out);
+}
+
+.sat.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sat-hit {
+  fill: transparent;
+}
+
+.sat-tether {
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.sat-leader {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.sat-city {
+  fill: var(--text);
+  stroke: var(--bg);
+  stroke-width: 1.2;
+  transition: fill var(--t-fast) var(--ease-out);
+}
+
+.sat-probe circle {
+  fill: var(--text);
+  transition: fill var(--t-fast) var(--ease-out);
+}
+
+.sat-probe rect {
+  fill: var(--cold);
+}
+
+.sat-probe .sat-beacon {
+  fill: var(--alert);
+  opacity: 0.9;
+  animation: beacon 2.6s var(--ease-in-out) infinite alternate;
+}
+
+.stage.is-paused .sat-beacon {
+  animation-play-state: paused;
+}
+
+@keyframes beacon {
+  from {
+    opacity: 0.15;
+  }
+  to {
+    opacity: 0.95;
+  }
+}
+
+.sat-name,
+.sat-time {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  transition: fill var(--t-fast) var(--ease-out);
+}
+
+.sat-name {
+  font-size: 11px;
+  fill: var(--text-2);
+}
+
+.sat-time {
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--text);
+}
+
+.stage.is-compact .sat-time {
+  font-size: 12px;
+}
+
+.sat.is-active .sat-tether {
+  opacity: 0.9;
+}
+
+.sat.is-active .sat-leader {
+  stroke: var(--accent);
+}
+
+.sat.is-active .sat-city,
+.sat.is-active .sat-probe circle:not(.sat-beacon),
+.sat.is-active .sat-name,
+.sat.is-active .sat-time {
+  fill: var(--accent);
+}
+
+/* ---------- control de tiempo ---------- */
+
+.time {
+  grid-area: time;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-4);
+}
+
+.time-head,
+.time-now,
+.time-shift {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.time-date {
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.time-now {
+  margin-top: var(--s-1);
+}
+
+.time-clock {
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.time-clock small {
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.time-shift {
+  margin-top: var(--s-3);
+}
+
+.time-out {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition: color var(--t-med) var(--ease-out);
+}
+
+.time-out.is-shifted {
+  color: var(--accent);
+}
+
+/* El mando es el cohete de la serie; el tramo entre "ahora" y el cohete se ilumina. */
+.time-range {
+  --p: 0.5;
+  --thumb: 44px;
+  --at: calc(var(--thumb) / 2 + var(--p) * (100% - var(--thumb)));
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.time-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--border) min(var(--at), 50%),
+    var(--accent) min(var(--at), 50%),
+    var(--accent) max(var(--at), 50%),
+    var(--border) max(var(--at), 50%)
+  );
+}
+
+.time-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--thumb);
+  height: 22px;
+  margin-top: -9px;
+  border: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 48'%3E%3Cg transform='translate(96 0) rotate(90)'%3E%3Cpath d='M17 66C17 78 21 86 24 94C27 86 31 78 31 66Z' fill='%23ff7a3d'/%3E%3Cpath d='M20.5 66C20.5 73 22.5 78 24 83C25.5 78 27.5 73 27.5 66Z' fill='%23ffd9a8'/%3E%3Cpath d='M14 46L5 64L5 69L15 63Z' fill='%23c9a27e'/%3E%3Cpath d='M34 46L43 64L43 69L33 63Z' fill='%23c9a27e'/%3E%3Cpath d='M18 62H30L28.5 68H19.5Z' fill='%238b949e'/%3E%3Cpath d='M24 3C33 13 36 27 36 42V60C36 62 34.5 63 33 63H15C13.5 63 12 62 12 60V42C12 27 15 13 24 3Z' fill='%23f4f6f8'/%3E%3Cpath d='M12 50H36V54H12Z' fill='%23c9a27e'/%3E%3Ccircle cx='24' cy='31' r='6' fill='%23161b22' stroke='%238b949e' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E")
+    center / contain no-repeat;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.time-range:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+/* El foco se marca en el cohete, no en toda la caja del control. */
+.time-range:focus-visible {
+  outline: none;
+}
+
+.time-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--cold);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.time-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--cold);
+  outline-offset: 4px;
+}
+
+.time-range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.time-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rocket);
+}
+
+.time-scale {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 22px;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+/* Cada marca ocupa lo mismo y se centra bajo su punto del carril. */
+.time-scale span {
+  flex: 0 0 0;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.time .btn {
+  min-width: 96px;
+}
+
+/* ---------- ciudades ---------- */
+
+.cities {
+  grid-area: cities;
+  padding: var(--s-4);
+}
+
+.search {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  color: var(--text-2);
+  pointer-events: none;
+}
+
+.search-input {
+  scroll-margin-top: var(--s-4);
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--s-3) 0 40px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-md);
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+
+.search-input::placeholder {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  opacity: 1;
+}
+
+.search-input:hover {
+  border-color: var(--border-strong);
+}
+
+.search-input:focus-visible {
+  outline-offset: 0;
+  border-radius: var(--radius);
+}
+
+.search-input:disabled {
+  cursor: not-allowed;
+}
+
+.search-pop {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  padding: var(--s-1);
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.search-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name meta"
+    "place meta";
+  align-items: center;
+  column-gap: var(--s-3);
+  min-height: 48px;
+  padding: 6px var(--s-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.search-list li[aria-selected="true"] {
+  background: var(--accent-soft);
+}
+
+.search-list li[aria-disabled="true"] {
+  cursor: default;
+}
+
+.search-list li[aria-disabled="true"] .o-name {
+  color: var(--text-2);
+}
+
+.o-name {
+  grid-area: name;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.o-place {
+  grid-area: place;
+  font-size: var(--fs-xs);
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+.o-name,
+.o-place {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.o-meta {
+  grid-area: meta;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.search-list li[aria-selected="true"] .o-meta {
+  color: var(--accent);
+}
+
+.search-list li[aria-selected="true"] .o-place {
+  color: var(--text);
+}
+
+.search-none {
+  padding: var(--s-3);
+}
+
+.table {
+  width: 100%;
+  margin-top: var(--s-3);
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table th,
+.table td {
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table thead th {
+  padding-bottom: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+
+.table .t-time {
+  width: 96px;
+  text-align: right;
+}
+
+.table .t-diff {
+  width: 80px;
+  text-align: right;
+}
+
+.table .t-x {
+  width: 40px;
+  text-align: right;
+}
+
+.table tbody tr {
+  height: 50px;
+  border-top: 1px solid var(--border);
+}
+
+.table tbody th {
+  font-weight: 400;
+}
+
+.c-name,
+.c-sub,
+.c-time {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.c-name {
+  font-weight: 500;
+  line-height: 1.3;
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.c-sub {
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+.c-time {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  line-height: 1.2;
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.c-icon {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 4px;
+  vertical-align: -1px;
+  color: var(--accent);
+}
+
+.is-night .c-icon {
+  color: var(--cold);
+}
+
+.table tbody .t-diff {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.table tbody tr.is-active .c-name,
+.table tbody tr.is-active .c-time {
+  color: var(--accent);
+}
+
+.table tbody tr.is-new {
+  animation: row-in var(--t-slow) var(--ease-out);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.c-remove {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--text-2);
+  transition:
+    color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.c-remove:hover {
+  background: var(--alert-soft);
+  color: var(--alert);
+}
+
+.cities-empty {
+  padding-block: var(--s-5) var(--s-3);
+}
+
+.cities-note {
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+/* ---------- pantallas estrechas ---------- */
+
+@media (max-width: 860px) {
+  .page {
+    gap: var(--s-4);
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "stage"
+      "time"
+      "cities";
+    gap: var(--s-4);
+  }
+
+  .stage {
+    position: relative;
+    top: auto;
+    height: min(calc(100vw - 2 * var(--page-pad) + 52px), 520px);
+  }
+
+  .stage-hud--tr {
+    display: none;
+  }
+
+  .time,
+  .cities {
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+
+  .time-clock {
+    font-size: 1.75rem;
+  }
+}
+
+/* En pantallas muy estrechas el icono basta: "día/noche" queda solo para lectores de pantalla. */
+@media (max-width: 400px) {
+  .table .t-time {
+    width: 76px;
+  }
+
+  .c-phase {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+@media (hover: none) {
+  .stage-hud--tr {
+    display: none;
+  }
+
+  .globe-hit {
+    cursor: default;
+  }
+}
