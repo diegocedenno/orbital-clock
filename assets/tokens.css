@@ -24,11 +24,13 @@
   --bg: #0d1117;
   --surface: #161b22;
   --surface-2: #1c232c;
+  --surface-3: #262e39;
   --border: #30363d;
   --border-strong: #484f58;
   --text: #e6edf3;
   --text-2: #8b949e;
   --accent: #c9a27e;
+  --accent-hover: #d6b393;
   --accent-soft: rgba(201, 162, 126, 0.14);
   --accent-ink: #1a130c;
   --cold: #58a6ff;
@@ -37,6 +39,11 @@
   --alert-soft: rgba(255, 122, 61, 0.14);
   --pluto-heart: #efe3d3;
   --rocket: #f4f6f8;
+  --rocket-line: transparent;
+  --star: #e6edf3;
+  --star-warm: #c9a27e;
+  --star-cold: #9cc7ff;
+  --orbit: #30363d;
 
   /* Tipografía */
   --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -71,6 +78,36 @@
   --t-fast: 140ms;
   --t-med: 320ms;
   --t-slow: 720ms;
+}
+
+/* Modo claro: el mismo cielo como carta estelar sobre papel. Lo activa theme.js
+   con data-theme en <html>. Los acentos se oscurecen para mantener contraste AA
+   como texto; lo blanco (cohete, sondas) se sostiene con un contorno de tinta. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f1ec;
+  --surface: #fbfaf7;
+  --surface-2: #ece7df;
+  --surface-3: #e0d9ce;
+  --border: #d5cec3;
+  --border-strong: #9c9285;
+  --text: #1b1f24;
+  --text-2: #57606a;
+  --accent: #7e5027;
+  --accent-hover: #693f1c;
+  --accent-soft: rgba(126, 80, 39, 0.12);
+  --accent-ink: #fffaf3;
+  --cold: #0a5cc2;
+  --cold-soft: rgba(10, 92, 194, 0.1);
+  --alert: #b13a09;
+  --alert-soft: rgba(177, 58, 9, 0.1);
+  --rocket: #ffffff;
+  --rocket-line: #3d4650;
+  --star: #6b7480;
+  --star-warm: #a8733f;
+  --star-cold: #3f7fd0;
+  --orbit: #b9b0a3;
 }
 
 *,
@@ -222,8 +259,8 @@ a {
 }
 
 .btn--accent:hover {
-  background: #d6b393;
-  border-color: #d6b393;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .sr-only {
@@ -278,6 +315,95 @@ a {
   flex: none;
 }
 
+/* Con el interruptor de tema la cabecera tiene tres piezas: marca a la izquierda,
+   estado e interruptor a la derecha. En pantallas estrechas el estado baja a su
+   propia línea para que el interruptor no quede suelto. */
+.page-head > .console {
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .page-head > .console {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+}
+
+/* Interruptor de modo claro / oscuro (lo conecta theme.js) */
+.theme-toggle {
+  position: relative;
+  flex: none;
+  width: 52px;
+  height: 28px;
+  /* 28 px de alto frente a los 26 de la marca: el margen evita que la cabecera crezca */
+  margin-block: -1px;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--accent);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out);
+}
+
+.theme-toggle:hover {
+  border-color: var(--border-strong);
+}
+
+/* Toque cómodo (44 px de alto) sin agrandar el interruptor a la vista */
+.theme-toggle::after {
+  content: "";
+  position: absolute;
+  inset: -9px -4px;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: var(--surface-3);
+  border-radius: 50%;
+  transition: transform var(--t-med) var(--ease-spring);
+}
+
+.theme-toggle-thumb svg {
+  grid-area: 1 / 1;
+  width: 14px;
+  height: 14px;
+  transition: opacity var(--t-med) var(--ease-out);
+}
+
+.theme-toggle-sun {
+  opacity: 0;
+}
+
+:root[data-theme="light"] .theme-toggle-thumb {
+  transform: translateX(24px);
+}
+
+:root[data-theme="light"] .theme-toggle-moon {
+  opacity: 0;
+}
+
+:root[data-theme="light"] .theme-toggle-sun {
+  opacity: 1;
+}
+
+/* El cambio de tema es un fundido corto de toda la página (View Transitions) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 .page-foot {
   display: flex;
   flex-wrap: wrap;
@@ -318,7 +444,7 @@ a {
 .starfield i {
   position: absolute;
   border-radius: 50%;
-  background: var(--text);
+  background: var(--star);
   opacity: 0.2;
   animation: star-twinkle var(--twinkle, 5s) var(--ease-in-out) var(--delay, 0s) infinite alternate;
   will-change: opacity;
@@ -336,7 +462,7 @@ a {
 /* Órbita punteada reutilizable para SVG */
 .orbit-dashed {
   fill: none;
-  stroke: var(--border);
+  stroke: var(--orbit);
   stroke-width: 1;
   stroke-dasharray: 2 6;
   stroke-linecap: round;

@@ -7,6 +7,7 @@
   <meta name="description" content="Reloj mundial: la Tierra gira dentro de un dial de 24 h con el terminador día/noche real y las ciudades orbitan como satélites con su hora local.">
   <meta name="theme-color" content="#0d1117">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script src="assets/theme.js"></script>
   <link rel="stylesheet" href="assets/tokens.css">
   <link rel="stylesheet" href="style.css">
   <script defer src="assets/starfield.js"></script>
@@ -30,14 +31,20 @@
     <header class="page-head">
       <a class="brand" href="./" aria-label="orbital-clock, inicio">
         <svg viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="16" cy="16" r="13.5" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="1.5 3.2" stroke-linecap="round"/>
+          <circle class="brand-orbit" cx="16" cy="16" r="13.5" fill="none" stroke-width="1.5" stroke-dasharray="1.5 3.2" stroke-linecap="round"/>
           <circle cx="16" cy="16" r="8" fill="#c9a27e"/>
-          <path d="M16 8a8 8 0 0 1 0 16Z" fill="#0d1117" opacity="0.6"/>
-          <circle cx="6.5" cy="6.5" r="2.4" fill="#e6edf3"/>
+          <path class="brand-night" d="M16 8a8 8 0 0 1 0 16Z"/>
+          <circle class="brand-sat" cx="6.5" cy="6.5" r="2.4"/>
         </svg>
         orbital-clock
       </a>
       <p class="console" id="status" role="status">status: <b>tiempo real</b></p>
+      <button type="button" class="theme-toggle" data-theme-toggle role="switch" aria-checked="false" aria-label="Modo claro">
+        <span class="theme-toggle-thumb" aria-hidden="true">
+          <svg class="theme-toggle-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor"/></svg>
+          <svg class="theme-toggle-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
     </header>
 
     <main class="layout">

@@ -12,6 +12,38 @@
   gap: var(--s-4) var(--s-5);
 }
 
+/* ---------- tema ---------- */
+
+/* Lo que no puede salir de un token: la noche siempre oscurece (sobre papel es un
+   velo de tinta azulada, no el color del fondo) y la sombra del desplegable. */
+:root {
+  --night: var(--bg);
+  --night-opacity: 0.52;
+  --pop-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="light"] {
+  --night: #16305c;
+  --night-opacity: 0.36;
+  --pop-shadow: 0 14px 32px rgba(58, 44, 28, 0.18);
+}
+
+/* ---------- marca ---------- */
+
+.brand-orbit {
+  stroke: var(--text-2);
+}
+
+/* La mitad nocturna del icono usa la misma tinta que la noche del globo. */
+.brand-night {
+  fill: var(--night);
+  opacity: 0.6;
+}
+
+.brand-sat {
+  fill: var(--text);
+}
+
 /* ---------- escena ---------- */
 
 .stage {
@@ -45,6 +77,12 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+
+/* El borde de papel es más tenue que el del cielo oscuro: las órbitas suben un punto. */
+:root[data-theme="light"] .stage-svg .orbit-dashed {
+  stroke: var(--border-strong);
+  stroke-opacity: 0.55;
 }
 
 .sea {
@@ -107,8 +145,8 @@
 }
 
 .night {
-  fill: var(--bg);
-  fill-opacity: 0.52;
+  fill: var(--night);
+  fill-opacity: var(--night-opacity);
   fill-rule: evenodd;
 }
 
@@ -183,6 +221,14 @@
 .sat-probe circle {
   fill: var(--text);
   transition: fill var(--t-fast) var(--ease-out);
+}
+
+/* Sobre papel el cuerpo del satélite es blanco con contorno de tinta, como el
+   cohete de la serie: así no se confunde con la marca de su ciudad y la baliza se ve. */
+:root[data-theme="light"] .sat-probe circle:not(.sat-beacon) {
+  fill: var(--rocket);
+  stroke: var(--rocket-line);
+  stroke-width: 1.2;
 }
 
 .sat-probe rect {
@@ -343,6 +389,12 @@
   transition: transform var(--t-fast) var(--ease-out);
 }
 
+/* Un data URI no lee variables: el cohete sobre papel es otra imagen, con el cuerpo
+   blanco sostenido por un contorno de tinta y los acentos del modo claro. */
+:root[data-theme="light"] .time-range::-webkit-slider-thumb {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 48'%3E%3Cg transform='translate(96 0) rotate(90)'%3E%3Cpath d='M17 66C17 78 21 86 24 94C27 86 31 78 31 66Z' fill='%23b13a09'/%3E%3Cpath d='M20.5 66C20.5 73 22.5 78 24 83C25.5 78 27.5 73 27.5 66Z' fill='%23ffd9a8'/%3E%3Cpath d='M14 46L5 64L5 69L15 63Z' fill='%237e5027'/%3E%3Cpath d='M34 46L43 64L43 69L33 63Z' fill='%237e5027'/%3E%3Cpath d='M18 62H30L28.5 68H19.5Z' fill='%2357606a'/%3E%3Cpath d='M24 3C33 13 36 27 36 42V60C36 62 34.5 63 33 63H15C13.5 63 12 62 12 60V42C12 27 15 13 24 3Z' fill='%23ffffff' stroke='%233d4650' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M13.3 50H34.7V54H13.3Z' fill='%237e5027'/%3E%3Ccircle cx='24' cy='31' r='6' fill='%23161b22' stroke='%233d4650' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 .time-range:active::-webkit-slider-thumb {
   transform: scale(1.12);
 }
@@ -372,7 +424,7 @@
 .time-range::-moz-range-thumb {
   width: 18px;
   height: 18px;
-  border: 0;
+  border: 1px solid var(--rocket-line);
   border-radius: 50%;
   background: var(--rocket);
 }
@@ -458,7 +510,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--pop-shadow);
 }
 
 .search-list {

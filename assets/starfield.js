@@ -62,6 +62,12 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
+      // Los colores salen de los tokens: en modo claro las estrellas son tinta sobre papel.
+      var css = window.getComputedStyle(document.documentElement);
+      var plain = css.getPropertyValue("--star").trim() || "#e6edf3";
+      var warm = css.getPropertyValue("--star-warm").trim() || "#c9a27e";
+      var cold = css.getPropertyValue("--star-cold").trim() || "#9cc7ff";
+
       for (var i = 0; i < count; i++) {
         var x = rand() * w;
         var y = rand() * h;
@@ -69,7 +75,7 @@
         var r = size < 0.86 ? 0.5 + rand() * 0.4 : 0.9 + rand() * 0.6;
         var tone = rand();
         ctx.globalAlpha = 0.16 + rand() * 0.42;
-        ctx.fillStyle = tone < 0.12 ? "#c9a27e" : tone < 0.24 ? "#9cc7ff" : "#e6edf3";
+        ctx.fillStyle = tone < 0.12 ? warm : tone < 0.24 ? cold : plain;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
@@ -102,12 +108,14 @@
 
     paint();
     window.addEventListener("resize", onResize);
+    document.addEventListener("pluton:themechange", paint);
 
     return {
       element: root,
       repaint: paint,
       destroy: function () {
         window.removeEventListener("resize", onResize);
+        document.removeEventListener("pluton:themechange", paint);
         window.clearTimeout(pending);
         if (root.parentNode) root.parentNode.removeChild(root);
       },
