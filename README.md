@@ -4,7 +4,9 @@
 >
 > Un reloj mundial que es a la vez un dial de 24 horas: la Tierra, vista desde encima del polo norte, gira bajo un Sol fijo, y cada ciudad la orbita como un satélite con su hora local, cruzando el terminador día/noche real.
 
-![orbital-clock preview](docs/preview.png)
+**[Live demo · Demo en vivo →](https://diegocedenno.github.io/orbital-clock/)**
+
+[![orbital-clock preview](docs/preview.png)](https://diegocedenno.github.io/orbital-clock/)
 
 **[English](#english)** · **[Español](#español)**
 
