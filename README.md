@@ -21,6 +21,7 @@
 - A table lists the same cities with their UTC offset, the difference from your own time zone and whether it is day or night there.
 - Search any IANA time zone by city, country or region — accents are ignored, so `bogota` finds Bogotá. Caracas is there by default; add up to ten cities, remove them, and the list survives a reload (`localStorage`).
 - Drag time ±24 h with the slider, or grab the globe with a mouse and turn it: the Earth spins, the cities orbit from day into night and every clock rolls with them. **ahora** snaps back to real time.
+- A switch in the header flips between dark and light mode: the same sky redrawn as a star chart on paper, where the night side of the globe becomes a wash of blue ink. The choice is remembered and shared across the Plutón series.
 
 ### What makes it technically interesting
 
@@ -65,6 +66,7 @@ It also works as-is on GitHub Pages.
 - Una tabla repite las mismas ciudades con su desfase UTC, la diferencia respecto a tu zona horaria y si allí es de día o de noche.
 - Busca cualquier huso IANA por ciudad, país o región, sin distinguir acentos: `bogota` encuentra Bogotá. Caracas viene por defecto; puedes agregar hasta diez ciudades, quitarlas, y la lista sobrevive a una recarga (`localStorage`).
 - Arrastra el tiempo ±24 h con el control, o agarra el globo con el ratón y gíralo: la Tierra rota, las ciudades orbitan del día a la noche y todos los relojes avanzan con ellas. **ahora** vuelve al tiempo real.
+- Un interruptor en la cabecera alterna entre modo oscuro y claro: el mismo cielo redibujado como carta estelar sobre papel, donde el lado nocturno del globo pasa a ser una aguada de tinta azul. La elección se recuerda y se comparte entre los proyectos de la serie Plutón.
 
 ### Qué lo hace interesante técnicamente
 
